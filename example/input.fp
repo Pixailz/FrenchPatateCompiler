@@ -1,0 +1,2 @@
+INP A
+HLT

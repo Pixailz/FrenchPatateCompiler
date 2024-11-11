@@ -1,0 +1,5 @@
+:LOOP
+RAND    A
+OUTST   A
+BCD     A
+JMP     :LOOP
