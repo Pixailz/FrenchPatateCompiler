@@ -1,5 +1,11 @@
 :LOOP
 RAND    A
+RAND    B
+RAND    C
+RAND    D
 OUTST   A
-BCD     A
+OUTST   B
+OUTST   C
+OUTST   D
+OUTR
 JMP     :LOOP
