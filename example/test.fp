@@ -1,35 +1,15 @@
-#JPS     :TestADD
-#JPS     :TestSUB
-#JPS     :TestADDR
-JPS     :TestCondition
-HLT
+$constant	= 0x01
+$address	= @0x002
+$reg		= B
 
-:TestADD
-LD      A       0x01
-ADD     A       0x01
-RTS
-
-:TestSUB
-LD      A       0x01
-SUB     A       0x01
-RTS
-
-:TestADDR
-STI     0x00    0x01
-ADDR    A       0x00
-RTS
-
-:TestCondition
-LD      A       0x01
-SUB     A       0x00
-JPZ     :TestConditionZero
-SUB     A       0x01
-JPZ     :TestConditionOne
-
-:TestConditionZero
-LD      A       0x04
-RTS     
-
-:TestConditionOne
-LD      A       0x08
-RTS
+:label1
+MOV	$reg		$address
+:label2
+MOV	$address	$reg
+:label3
+MOV $reg		$constant
+:label4
+MOV	$address	$constant
+:label5
+MOV	$reg		:label5
+MOV	:label1		$constant

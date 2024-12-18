@@ -1,2 +1,0 @@
-INP A
-HLT

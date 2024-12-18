@@ -1,2 +1,6 @@
+# Compiled thing
 example/*
 !example/*.fp
+
+# Python byte code
+__pycache__
