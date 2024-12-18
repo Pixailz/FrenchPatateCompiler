@@ -1,170 +1,146 @@
 import sys
 
-DEBUG = 1
+from pprint import pprint
 
-RETV = {
-    "ARG":              0x01,
-    "LABEL_NOT_FOUND":  0x02,
-    "VAR_NOT_FOUND":    0x03,
-    "SYM_NOT_FOUND":    0x04,
-    "WRONG_ARG":        0x05,
-    "LABEL_NOT_FOUND":  0x06,
-}
+
+from config import RETV
+from error import CompileError
+
+import parsing
+
 
 if len(sys.argv) != 2:
     print("file needed")
     sys.exit(RETV["ARG"])
 
-with open(sys.argv[1], "r") as f:
-    FILE_STR = f.read()
+class Compiler():
+	def __init__(self):
+		self.label = {}
+		self.variable = {}
 
-OPCODE = {
-    "NOOP": {       "value": 0b00_0000, "args": []},
-    "LD": {         "value": 0b00_0001, "args": ["R", "OP1"]},
-    "LDI": {        "value": 0b00_0010, "args": ["R", "OP1"]},
-    "LDE": {        "value": 0b00_0011, "args": ["R", "OP1"]},
-    "ST": {         "value": 0b00_0100, "args": ["R", "OP1"]},
-    "STI": {        "value": 0b00_0101, "args": ["OP1", "OP2"]},
-    "ADD": {        "value": 0b00_0110, "args": ["R", "OP1"]},
-    "SUB": {        "value": 0b00_0111, "args": ["R", "OP1"]},
-    "AND": {        "value": 0b00_1000, "args": ["R", "OP1"]},
-    "OR": {         "value": 0b00_1001, "args": ["R", "OP1"]},
-    "XOR": {        "value": 0b00_1010, "args": ["R", "OP1"]},
-    "NOT": {        "value": 0b00_1011, "args": ["R", "OP1"]},
-    "SHR": {        "value": 0b00_1100, "args": ["R", "OP1"]},
-    "SHL": {        "value": 0b00_1101, "args": ["R", "OP1"]},
-    "ADDR": {       "value": 0b00_1110, "args": ["R", "OP1"]},
-    "SUBR": {       "value": 0b00_1111, "args": ["R", "OP1"]},
-    "ANDR": {       "value": 0b01_0000, "args": ["R", "OP1"]},
-    "ORR": {        "value": 0b01_0001, "args": ["R", "OP1"]},
-    "XORR": {       "value": 0b01_0010, "args": ["R", "OP1"]},
-    "NOTR": {       "value": 0b01_0011, "args": ["R", "OP1"]},
-    "JMP": {        "value": 0b01_0100, "args": ["OP1"]},
-    "JPZ": {        "value": 0b01_0101, "args": ["OP1"]},
-    "JPC": {        "value": 0b01_0110, "args": ["OP1"]},
+	def open(self, path):
+		self.path = path
 
-    "PUSH": {       "value": 0b01_1000, "args": ["R"]},
-    "POP": {        "value": 0b01_1001, "args": ["R"]},
-    "JPS": {        "value": 0b01_1010, "args": ["OP1"]},
-    "RTS": {        "value": 0b01_1011, "args": []},
+		with open(self.path, "r") as f:
+			self.str = f.read()
 
-    "INP": {        "value": 0b11_1011, "args": ["R"]},
-    "RAND": {       "value": 0b11_1100, "args": ["R"]},
-    "OUTST": {      "value": 0b11_1101, "args": ["R"]},
-    "OUTR": {       "value": 0b11_1110, "args": []},
-    "HLT": {        "value": 0b11_1111, "args": []},
-}
+	def precompile(self):
+		self.lines = []
+		length = 0
+		self.nb_line = 0
 
-def encode_reg(reg):
-    if reg == "A":
-        return 0b00_00_0000
-    elif reg == "B":
-        return 0b01_00_0000
-    elif reg == "C":
-        return 0b10_00_0000
-    elif reg == "D":
-        return 0b11_00_0000
-    return None
+		# 1. parse and get variable
+		for line in self.str.split("\n"):
+			self.nb_line += 1
+			# Basic parsing, strip space, and split on space
+			parsed = parsing.process_line(line)
+			if parsed is None:
+				continue
 
-def get_arg(arg):
-    if arg.startswith(":") or arg.startswith("$"):
-        return arg
-    if arg.startswith("0x"):
-        return int(arg, 16)
-    return int(arg)
+			# Check if current line is a variable
+			try:
+				variable = parsing.get_variable_assign(parsed)
+			except CompileError as e:
+				print(f"Line {self.nb_line}: {e}")
+				sys.exit(RETV["VARIABLE_ASSIGN"])
 
-def replace_label_var(arg):
-    if arg.startswith(":"):
-        _label = arg.removeprefix(":")
-        label = LABEL.get(_label, None)
-        if label is None:
-            print(f"Label {_label} not found")
-            sys.exit(RETV["LABEL_NOT_FOUND"])
-        return label
-    if arg.startswith("$"):
-        _var = arg.removeprefix("$")
-        var = VAR.get(_var, None)
-        if var is None:
-            print(f"Var {_var} not found")
-            sys.exit(RETV["VAR_NOT_FOUND"])
-        return var 
+			if variable is not None:
+				self.variable[variable[0]] = variable[1]
+				continue
 
-COMPILED = []
-LABEL = {}
-VAR = {}
+			self.lines.append(parsed)
 
-for line in FILE_STR.split("\n"):
-    if line.startswith("#"):
-        continue
+	def replace_var(self, line):
+		for k, v in enumerate(line):
+			if parsing.is_variable(v):
+				name = parsing.get_variable_name(v)
+				value = self.variable.get(name, None)
+				if value is None:
+					raise CompileError("Variable not found", name)
+				line[k] = value
 
-for line in FILE_STR.split("\n"):
-    if line == "":
-        continue
-    if line.startswith(":"):
-        LABEL[line.removeprefix(":")] = len(COMPILED)
-        continue
+		return line
 
-    elif line.startswith("$"):
-        line = line.removeprefix("$")
-        var = line.split()
-        VAR[var[0]] = get_arg(var[1])
-        continue
+	def compile(self):
+		self.precompile()
+		self.compiled = []
 
-    elif line.startswith("#"):
-        continue
- 
-    tmp = line.split()
-    inst = tmp[0]
-    args = tmp[1:]
-    opcode = OPCODE.get(inst, None)
+		length = 0
 
-    if DEBUG:
-        print(f"Instruction {inst}", end="")
-        i = 0
-        for arg in args:
-            print(f", arg{i+1} {args[i]}", end="")
-            i += 1
-        print()
+		""" TODO
+		- finish replace_var
+		- finish compiling (get correct opcode, encode reg, add operand)
+		"""
+		for line in self.lines:
 
-    if opcode is None:
-        print(f"Literal {inst} could not be compiled")
-        sys.exit(RETV["SYM_NOT_FOUND"])
-        
-    if len(args) != len(opcode["args"]):
-        print(f"Wrong argument for {inst}")
-        sys.exit(RETV["WRONG_ARG"])
+			instr = line[0]
+			args = line[1:]
 
-    compiled = [opcode["value"]]
-    for i in range(len(opcode["args"])):
-        compiled.append(0)
-    i = 0
-    for arg in opcode["args"]:
-        if arg == "R":
-            reg = encode_reg(args[i])
-            if reg is None:
-                print(f"Wrong register {args[i]}")
-                sys.exit(4)
-            compiled[0] |= reg
-            compiled.pop()
-        elif arg == "OP1":
-            compiled[1] = get_arg(args[i])
-        elif arg == "OP2":
-            compiled[2] = get_arg(args[i])
-        i += 1 
+			label = parsing.get_label(instr)
+			if label is not None:
+				self.label[label] = length
+				continue
 
-    COMPILED += compiled
+			# 2. replace var
+			try:
+				args = self.replace_var(args)
 
-i = 0
-for instr in COMPILED:
-    if type(instr) == str:
-        COMPILED[i] = replace_label_var(instr)
-    i += 1
+			except CompileError as e:
+				print(f"Line {self.nb_line}: {e}")
+				sys.exit(RETV["VARIABLE_NOT_FOUND"])
 
-if DEBUG:
-    i = 0
-    for b in COMPILED:
-        print(f"0x{i:02x}: {b:08b}")
-        i += 1
+			# 3.
+			opcode = parsing.get_instruction(instr)
+			if opcode is None:
+				print(f"Line {self.nb_line}: Unknown Instructions {instr}")
+				sys.exit(RETV["INSTRUCTION_UNKNOWN"])
 
-with open(sys.argv[1].removesuffix(".fp"), "wb") as f:
-    f.write(bytes(COMPILED))
+			opcode_variant = parsing.get_instruction_variant(args, opcode)
+
+			if opcode_variant is None:
+				print(f"Line {self.nb_line}: Wrong usage for {instr}")
+				sys.exit(RETV["INSTRUCTION_WRONG_USAGE"])
+
+			compiled_tmp = []
+			compiled_instr = opcode_variant['value']
+
+			for k, arg in enumerate(opcode_variant["args"]):
+				if parsing.is_label(args[k]):
+					compiled_tmp.append(args[k])
+					continue
+
+				if arg == "R":
+					compiled_instr = parsing.encode_reg(args[k], compiled_instr)
+
+				if arg == "A":
+					compiled_tmp.extend(parsing.encode_address(args[k]))
+
+				if arg == "C":
+					compiled_tmp.append(parsing.encode_constant(args[k]))
+
+			self.compiled.append(compiled_instr)
+			self.compiled.extend(compiled_tmp)
+
+			length += parsing.get_instruction_size(opcode_variant["args"])
+
+		compiled_tmp = []
+
+		for k, byte in enumerate(self.compiled):
+			if parsing.is_label(byte):
+				try:
+					compiled_tmp.extend(parsing.encode_label(self, byte))
+				except CompileError as e:
+					print(f"Line {self.nb_line}: {e}")
+					sys.exit(RETV["LABEL_NOT_FOUND"])
+			else:
+				compiled_tmp.append(byte)
+
+		self.compiled = compiled_tmp
+
+if __name__ == "__main__":
+	compiler = Compiler()
+	compiler.open(sys.argv[1])
+	compiler.compile()
+
+	for k, v in enumerate(compiler.compiled):
+		print(f"{k:#06x}: {v:#04x}")
