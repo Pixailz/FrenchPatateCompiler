@@ -48,15 +48,15 @@ def	is_constant(part):
 
 	return part is not None
 
-# def	is_constant_1(part):
-# 	part = str_to_int(part)
+def	is_constant_1(part):
+	part = str_to_int(part)
 
-# 	return part is not None and part <= 0xff
+	return part is not None and part <= 0xff
 
-# def	is_constant_2(part):
-# 	part = str_to_int(part)
+def	is_constant_2(part):
+	part = str_to_int(part)
 
-# 	return part is not None and part > 0xff
+	return part is not None and part > 0xff
 
 def is_address(part):
 	if is_label(part):
@@ -113,10 +113,6 @@ def get_operand_type(part):
 		return "A"
 	elif is_constant(part):
 		return "C"
-	# elif is_constant_1(part):
-	# 	return "C1"
-	# elif is_constant_2(part):
-	# 	return "C2"
 
 	return None
 
