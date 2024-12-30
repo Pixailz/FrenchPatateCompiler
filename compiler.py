@@ -1,13 +1,20 @@
+import signal
 import sys
 
 from pprint import pprint
 
-
-from config import RETV
+from config import RETV, REG_1, REG_2
 from error import CompileError
+from error import perror
 
 import parsing
 
+def	sig_handler(sig, frame):
+	print()
+	print("CTRL+C catched, interrupting")
+	sys.exit(130)
+
+signal.signal(signal.SIGINT, sig_handler)
 
 class Compiler():
 	def __init__(self):
@@ -36,8 +43,7 @@ class Compiler():
 			try:
 				variable = parsing.get_variable_assign(parsed)
 			except CompileError as e:
-				print(f"Line {self.nb_line}: {e}")
-				sys.exit(RETV["VARIABLE_ASSIGN"])
+				perror(e)
 			if variable is not None:
 				self.variable[variable[0]] = variable[1]
 				continue
@@ -50,7 +56,7 @@ class Compiler():
 				name = parsing.get_variable_name(v)
 				value = self.variable.get(name, None)
 				if value is None:
-					raise CompileError("Variable not found", name)
+					raise CompileError("Variable not found", name, RETV["VARIABLE_NOT_FOUND"])
 				line[k] = value
 
 		return line
@@ -75,8 +81,7 @@ class Compiler():
 			try:
 				args = self.replace_var(args)
 			except CompileError as e:
-				print(f"Line {self.nb_line}: {e}")
-				sys.exit(RETV["VARIABLE_NOT_FOUND"])
+				perror(e)
 
 			# 5. Check if instruction is found
 			opcode = parsing.get_instruction(instr)
@@ -93,17 +98,33 @@ class Compiler():
 			# 7. Compile value, leaving label intact for the moment
 			compiled_tmp = []
 			compiled_instr = opcode_variant['value']
+			is_constant_short = True
 			for k, arg in enumerate(opcode_variant["args"]):
 				if parsing.is_label(args[k]):
 					compiled_tmp.append(args[k])
 					continue
 
-				if arg == "R":
-					compiled_instr = parsing.encode_reg(args[k], compiled_instr)
+				if arg == "R1" or arg == "R2":
+					# compiled_instr = parsing.encode_reg(args[k], compiled_instr)
+					if arg == "R2":
+						is_constant_short = False
+					compiled_tmp.append(parsing.encode_reg(args[k], is_constant_short))
+
 				if arg == "A":
-					compiled_tmp.extend(parsing.encode_address(args[k]))
+					try:
+						compiled_tmp.extend(parsing.encode_address(args[k]))
+					except CompileError as e:
+						perror(e)
+
 				if arg == "C":
-					compiled_tmp.append(parsing.encode_constant(args[k]))
+					if is_constant_short:
+						if parsing.is_constant_2(args[k]):
+							print(f"Line {self.nb_line}: Constant to long {args[k]}")
+							sys.exit(RETV["CONSTANT_TOO_LONG"])
+
+						compiled_tmp.append(parsing.encode_constant_1(args[k]))
+					else:
+						compiled_tmp.extend(parsing.encode_constant_2(args[k]))
 
 			# 8. Update current compiled byte and update current length
 			self.compiled.append(compiled_instr)
@@ -121,8 +142,7 @@ class Compiler():
 				try:
 					compiled_tmp.extend(parsing.encode_label(self, byte))
 				except CompileError as e:
-					print(f"Line {self.nb_line}: {e}")
-					sys.exit(RETV["LABEL_NOT_FOUND"])
+					perror(e)
 			else:
 				compiled_tmp.append(byte)
 

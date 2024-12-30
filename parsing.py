@@ -1,6 +1,8 @@
 from config import SPECIAL_CHAR
 from config import OPCODE
-from config import REG
+from config import RETV
+from config import REG_1, REG_2
+from config import REG_1_SPEC, REG_2_SPEC
 
 from error import CompileError
 
@@ -12,9 +14,9 @@ def str_to_int(part):
 	try:
 		if part.startswith("0x"):
 			return int(part, 16)
-		elif part.startwith("0o"):
+		elif part.startswith("0o"):
 			return int(part, 8)
-		elif part.startwith("0b"):
+		elif part.startswith("0b"):
 			return int(part, 2)
 		else:
 			return int(part)
@@ -35,13 +37,26 @@ def is_label(part):
 		return False
 	return part.startswith(SPECIAL_CHAR["label"])
 
-def	is_reg(part):
-	return part.lower() in REG
+def	is_reg_1(part):
+	return part.lower() in REG_1
+
+def	is_reg_2(part):
+	return part.lower() in REG_2
 
 def	is_constant(part):
 	part = str_to_int(part)
 
 	return part is not None
+
+# def	is_constant_1(part):
+# 	part = str_to_int(part)
+
+# 	return part is not None and part <= 0xff
+
+# def	is_constant_2(part):
+# 	part = str_to_int(part)
+
+# 	return part is not None and part > 0xff
 
 def is_address(part):
 	if is_label(part):
@@ -77,10 +92,9 @@ def get_variable_assign(line):
 	if not line[1] == SPECIAL_CHAR["variable_assign"]:
 		raise CompileError(
 			"Wrong assignation symbole",
-			f"expected {SPECIAL_CHAR["variable_assign"]} got {line[1]}"
+			f"expected {SPECIAL_CHAR["variable_assign"]} got {line[1]}",
+			RETV["VARIABLE_ASSIGN"]
 		)
-
-	assert line[1] == SPECIAL_CHAR["variable_assign"]
 
 	return line[0].removeprefix(SPECIAL_CHAR["variable"]), line[2]
 
@@ -91,12 +105,18 @@ def get_instruction(part):
 	return OPCODE.get(part, None)
 
 def get_operand_type(part):
-	if is_reg(part):
-		return "R"
+	if is_reg_1(part):
+		return "R1"
+	elif is_reg_2(part):
+		return "R2"
 	elif is_address(part):
 		return "A"
 	elif is_constant(part):
 		return "C"
+	# elif is_constant_1(part):
+	# 	return "C1"
+	# elif is_constant_2(part):
+	# 	return "C2"
 
 	return None
 
@@ -121,12 +141,14 @@ def get_instruction_variant(args, opcode):
 	return found
 
 def get_operand_size(op):
-	if op == "R":
-		return 0
+	if op == "R1" or op == "R2":
+		return 1
 	elif op == "A":
 		return 2
-	elif op == "C":
+	elif op == "C1":
 		return 1
+	elif op == "C2":
+		return 2
 	return 0
 
 def	get_instruction_size(operand):
@@ -135,22 +157,62 @@ def	get_instruction_size(operand):
 		length += get_operand_size(op)
 	return length
 
+def get_reg(reg):
+	if reg == "a":
+		return 0b00
+	elif reg == "b":
+		return 0b01
+	elif reg == "c":
+		return 0b10
+	elif reg == "d":
+		return 0b11
+	return 0
+
+def get_reg_spec(reg):
+	if reg.endswith(REG_1_SPEC[0]):
+		return 0b10
+	elif reg.endswith(REG_1_SPEC[1]):
+		return 0b01
+	return 0b00
+
 # Encode
-def encode_reg(part, opcode):
-	return REG.index(part.lower()) << 6 | opcode
+def encode_reg(part, is_short):
+	part = part.lower()
+	_part = part
+	reg_spec = 0
+
+	if is_short:
+		for s in REG_1_SPEC:
+			_part = _part.removesuffix(s)
+		reg_spec = get_reg_spec(part)
+	else:
+		for s in REG_2_SPEC:
+			_part = _part.removeprefix(s[0])
+			_part = _part.removesuffix(s[1])
+
+	reg = get_reg(_part)
+
+	return reg | reg_spec << 2
 
 def encode_address(part):
 	if type(part) is str:
 		addr_n = str_to_int(part.removeprefix(SPECIAL_CHAR["address"]))
 	elif type(part) is int:
 		addr_n = part
+
+	if addr_n > 0xffff:
+		raise CompileError("Address to high", addr_n, RETV["ADDRESS_TOO_HIGH"])
 	return [addr_n >> 8, addr_n & 0xff]
 
-def encode_constant(part):
+def encode_constant_1(part):
 	return str_to_int(part)
+
+def encode_constant_2(part):
+	part = str_to_int(part)
+	return [ part >> 8, part & 0xff ]
 
 def encode_label(self, label):
 	value = self.label.get(label.removeprefix(SPECIAL_CHAR["label"]), None)
 	if value is None:
-		raise CompileError("Label not found", label)
+		raise CompileError("Label not found", label, RETV["LABEL_NOT_FOUND"])
 	return encode_address(value)
