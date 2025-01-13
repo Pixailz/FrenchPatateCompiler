@@ -1,6 +1,10 @@
 # Compiled thing
 example/*
+example/test/*
+
 !example/*.fp
+!example/test
+!example/test/*.fp
 
 # Python byte code
 __pycache__
