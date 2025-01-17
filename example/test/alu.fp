@@ -1,0 +1,5 @@
+## 0x06 ADD	(R1, C)
+MOV	AL	0x01
+ADD	AL	0x02
+
+HLT

@@ -42,12 +42,17 @@ OPCODE = {
 	"NOP": [
 		{"value": 0b0000_0000, "args": []}
 	],
+
 	"MOV": [
 		{"value": 0b0000_0001, "args": ["R1",	"C"]},
 		{"value": 0b0000_0010, "args": ["R2",	"C"]},
 		{"value": 0b0000_0011, "args": ["A",	"R1"]},
 		{"value": 0b0000_0100, "args": ["R1",	"A"]},
 		{"value": 0b0000_0101, "args": ["A",	"C"]},
+	],
+
+	"ADD": [
+		{"value": 0b0000_0110, "args": ["R1", "C"]}
 	],
 
 	"HLT": [
