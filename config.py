@@ -40,22 +40,55 @@ C	= Constant
 """
 OPCODE = {
 	"NOP": [
-		{"value": 0b0000_0000, "args": []}
+		{"value": 0x00, "args": []}
 	],
 
 	"MOV": [
-		{"value": 0b0000_0001, "args": ["R1",	"C"]},
-		{"value": 0b0000_0010, "args": ["R2",	"C"]},
-		{"value": 0b0000_0011, "args": ["A",	"R1"]},
-		{"value": 0b0000_0100, "args": ["R1",	"A"]},
-		{"value": 0b0000_0101, "args": ["A",	"C"]},
+		{"value": 0x01, "args": ["R1",	"C"]},
+		{"value": 0x02, "args": ["R2",	"C"]},
+		{"value": 0x03, "args": ["A",	"R1"]},
+		{"value": 0x04, "args": ["R1",	"A"]},
+		{"value": 0x05, "args": ["A",	"C"]},
 	],
 
 	"ADD": [
-		{"value": 0b0000_0110, "args": ["R1", "C"]}
+		{"value": 0x06, "args": ["R1",	"C"]}
+		{"value": 0x07, "args": ["R1",	"A"]}
+		{"value": 0x08, "args": ["A",	"C"]}
+		{"value": 0x09, "args": ["A",	"R1"]}
+		{"value": 0x0a, "args": ["R1",	"R1"]}
+		{"value": 0x0b, "args": ["A",	"A"]}
 	],
 
+	# "SUB": [
+	# 	{"value": 0x07, "args": ["R1",	"C"]}
+	# ],
+
+	# "AND": [
+	# 	{"value": 0x08, "args": ["R1",	"C"]}
+	# ],
+
+	# "OR": [
+	# 	{"value": 0x09, "args": ["R1",	"C"]}
+	# ],
+
+	# "XOR": [
+	# 	{"value": 0x0a, "args": ["R1",	"C"]}
+	# ],
+
+	# "NOT": [
+	# 	{"value": 0x0b, "args": ["R1"]}
+	# ],
+
+	# "SHL": [
+	# 	{"value": 0x0c, "args": ["R1",	"C"]}
+	# ],
+
+	# "SHR": [
+	# 	{"value": 0x0d, "args": ["R1",	"C"]}
+	# ],
+
 	"HLT": [
-		{"value": 0b1111_1111, "args": []},
+		{"value": 0xff, "args": []},
 	],
 }
