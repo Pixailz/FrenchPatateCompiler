@@ -52,12 +52,21 @@ OPCODE = {
 	],
 
 	"ADD": [
-		{"value": 0x06, "args": ["R1",	"C"]}
-		{"value": 0x07, "args": ["R1",	"A"]}
-		{"value": 0x08, "args": ["A",	"C"]}
-		{"value": 0x09, "args": ["A",	"R1"]}
-		{"value": 0x0a, "args": ["R1",	"R1"]}
-		{"value": 0x0b, "args": ["A",	"A"]}
+		{"value": 0x06, "args": ["R1",	"C"]},
+		{"value": 0x07, "args": ["R1",	"A"]},
+		{"value": 0x08, "args": ["A",	"C"]},
+		{"value": 0x09, "args": ["A",	"R1"]},
+		{"value": 0x0a, "args": ["R1",	"R1"]},
+		{"value": 0x0b, "args": ["A",	"A"]},
+	],
+
+	"SUB": [
+		{"value": 0x0c, "args": ["R1",	"C"]},
+		{"value": 0x0d, "args": ["R1",	"A"]},
+		{"value": 0x0e, "args": ["A",	"C"]},
+		{"value": 0x0f, "args": ["A",	"R1"]},
+		{"value": 0x10, "args": ["R1",	"R1"]},
+		{"value": 0x11, "args": ["A",	"A"]},
 	],
 
 	# "SUB": [
