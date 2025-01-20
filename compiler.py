@@ -148,12 +148,16 @@ class Compiler():
 
 		self.compiled = compiled_tmp
 
+	def	write_compiled(self):
+		with open(self.path.removesuffix(".fp"), "wb") as f:
+			f.write(bytearray(self.compiled))
+
 def xxd(byte, size=0x10, dividing=8):
 	divider = size / dividing
 
 	for k, v in enumerate(byte):
 		if not k % size:
-			to_print = f"{k:#06x}: "
+			to_print = f"{k:08x}: "
 			if k != 0:
 				to_print = "\n" + to_print
 			print(to_print, end="")
@@ -172,3 +176,5 @@ if __name__ == "__main__":
 	compiler.compile()
 
 	xxd(compiler.compiled)
+
+	compiler.write_compiled()

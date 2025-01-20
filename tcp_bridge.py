@@ -7,6 +7,7 @@ from pprint import pprint
 
 
 from compiler import Compiler, xxd
+from config import DEBUG
 
 SOCKET = None
 
@@ -72,8 +73,9 @@ class TCPBridge():
 		for addr in range(start, end, direction):
 			self.send_address(addr)
 			self.send(byte[i])
-			print(f"{addr:#06x}", end="")
-			print(f": {byte[i]:#04x}")
+			if DEBUG == 1:
+				print(f"{addr:#06x}", end="")
+				print(f": {byte[i]:#04x}")
 			i += 1
 
 	def close(self):

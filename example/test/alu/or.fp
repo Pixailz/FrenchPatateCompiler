@@ -1,0 +1,35 @@
+## 0x18	OR	(R1, C)
+MOV	AL	0b0011
+
+OR	AL	0b0110
+
+## 0x19	OR	(R1, A)
+MOV	@0x1000 0b0010
+MOV	AL		0b0001
+
+OR AL		@0x1000
+
+## 0x1a	OR	(A, C)
+MOV	@0x1000 0b0011
+
+OR	@0x1000 0b0001
+
+## 0x1b	OR	(A, R1)
+MOV	@0x1000 1
+MOV	AL		2
+
+OR @0x1000 AL
+
+## 0x1c	OR	(R1, R1)
+MOV	AL	0x11
+MOV	AH	0x01
+
+OR	AL	AH
+
+## 0x1d	OR	(A, A)
+MOV	@0x1000	0x12
+MOV	@0x1001	0x01
+
+OR	@0x1000 @0x1001
+
+HLT

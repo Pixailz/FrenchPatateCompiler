@@ -1,4 +1,4 @@
-DEBUG = 1
+DEBUG = 0
 
 RETV = {
     "ARG":						0x01,
@@ -69,33 +69,57 @@ OPCODE = {
 		{"value": 0x11, "args": ["A",	"A"]},
 	],
 
-	# "SUB": [
-	# 	{"value": 0x07, "args": ["R1",	"C"]}
-	# ],
+	"AND": [
+		{"value": 0x12, "args": ["R1",	"C"]},
+		{"value": 0x13, "args": ["R1",	"A"]},
+		{"value": 0x14, "args": ["A",	"C"]},
+		{"value": 0x15, "args": ["A",	"R1"]},
+		{"value": 0x16, "args": ["R1",	"R1"]},
+		{"value": 0x17, "args": ["A",	"A"]},
+	],
 
-	# "AND": [
-	# 	{"value": 0x08, "args": ["R1",	"C"]}
-	# ],
+	"OR": [
+		{"value": 0x18, "args": ["R1",	"C"]},
+		{"value": 0x19, "args": ["R1",	"A"]},
+		{"value": 0x1a, "args": ["A",	"C"]},
+		{"value": 0x1b, "args": ["A",	"R1"]},
+		{"value": 0x1c, "args": ["R1",	"R1"]},
+		{"value": 0x1d, "args": ["A",	"A"]},
+	],
 
-	# "OR": [
-	# 	{"value": 0x09, "args": ["R1",	"C"]}
-	# ],
+	"XOR": [
+		{"value": 0x1e, "args": ["R1",	"C"]},
+		{"value": 0x1f, "args": ["R1",	"A"]},
+		{"value": 0x20, "args": ["A",	"C"]},
+		{"value": 0x21, "args": ["A",	"R1"]},
+		{"value": 0x22, "args": ["R1",	"R1"]},
+		{"value": 0x23, "args": ["A",	"A"]},
+	],
 
-	# "XOR": [
-	# 	{"value": 0x0a, "args": ["R1",	"C"]}
-	# ],
+	"SHL": [
+		{"value": 0x24, "args": ["R1",	"C"]},
+		{"value": 0x25, "args": ["R1",	"A"]},
+		{"value": 0x26, "args": ["A",	"C"]},
+		{"value": 0x27, "args": ["A",	"R1"]},
+		{"value": 0x28, "args": ["R1",	"R1"]},
+		{"value": 0x29, "args": ["A",	"A"]},
+	],
 
-	# "NOT": [
-	# 	{"value": 0x0b, "args": ["R1"]}
-	# ],
+	"SHR": [
+		{"value": 0x2a, "args": ["R1",	"C"]},
+		{"value": 0x2b, "args": ["R1",	"A"]},
+		{"value": 0x2c, "args": ["A",	"C"]},
+		{"value": 0x2d, "args": ["A",	"R1"]},
+		{"value": 0x2e, "args": ["R1",	"R1"]},
+		{"value": 0x2f, "args": ["A",	"A"]},
+	],
 
-	# "SHL": [
-	# 	{"value": 0x0c, "args": ["R1",	"C"]}
-	# ],
+	"NOT": [
+		{"value": 0x30, "args": ["R1"]},
+		{"value": 0x31, "args": ["A"]},
+	],
 
-	# "SHR": [
-	# 	{"value": 0x0d, "args": ["R1",	"C"]}
-	# ],
+
 
 	"HLT": [
 		{"value": 0xff, "args": []},
