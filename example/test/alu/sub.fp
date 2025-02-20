@@ -1,32 +1,32 @@
-## 0x0c	SUB	(R1, C)
+## SUB	(R1, C)
 MOV	AL	0b0001
 
 SUB	AL	0b0010
 
-## 0x0d	SUB	(R1, A)
+## SUB	(R1, A)
 MOV	@0x1000 0b0010
 MOV	AL		0b0001
 
 SUB AL		@0x1000
 
-## 0x0e	SUB	(A, C)
+## SUB	(A, C)
 MOV	@0x1000 0b0011
 
 SUB	@0x1000 0b0001
 
-## 0x0f	SUB	(A, R1)
+## SUB	(A, R1)
 MOV	@0x1000 1
 MOV	AL		2
 
 SUB @0x1000 AL
 
-## 0x10	SUB	(R1, R1)
+## SUB	(R1, R1)
 MOV	AL	0x11
 MOV	AH	0x01
 
 SUB	AL	AH
 
-## 0x11	SUB	(A, A)
+## SUB	(A, A)
 MOV	@0x1000	0x12
 MOV	@0x1001	0x01
 

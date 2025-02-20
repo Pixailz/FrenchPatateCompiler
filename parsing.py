@@ -43,19 +43,22 @@ def	is_reg_1(part):
 def	is_reg_2(part):
 	return part.lower() in REG_2
 
+def is_reg_2_address(part):
+	if not part.startswith(SPECIAL_CHAR["address"]):
+		return False
+
+	return is_reg_2(part.removeprefix(SPECIAL_CHAR["address"]))
+
 def	is_constant(part):
 	part = str_to_int(part)
-
 	return part is not None
 
 def	is_constant_1(part):
 	part = str_to_int(part)
-
 	return part is not None and part <= 0xff
 
 def	is_constant_2(part):
 	part = str_to_int(part)
-
 	return part is not None and part > 0xff
 
 def is_address(part):
@@ -109,6 +112,8 @@ def get_operand_type(part):
 		return "R1"
 	elif is_reg_2(part):
 		return "R2"
+	elif is_reg_2_address(part):
+		return "@R2"
 	elif is_address(part):
 		return "A"
 	elif is_constant(part):
@@ -137,11 +142,11 @@ def get_instruction_variant(args, opcode):
 	return found
 
 def get_operand_size(op):
-	if op == "R1" or op == "R2":
+	if op == "R1" or op == "R2" or op == "@R2":
 		return 1
 	elif op == "A":
 		return 2
-	elif op == "C1":
+	elif op == "C1" or op == "C":
 		return 1
 	elif op == "C2":
 		return 2
@@ -149,6 +154,9 @@ def get_operand_size(op):
 
 def	get_instruction_size(operand):
 	length = 1
+	match operand:
+		case ["R2", "C"]:
+			return 4
 	for op in operand:
 		length += get_operand_size(op)
 	return length
@@ -171,8 +179,16 @@ def get_reg_spec(reg):
 		return 0b01
 	return 0b00
 
+def is_reg_2_address(part):
+	if not part.startswith(SPECIAL_CHAR["address"]):
+		return False
+
+	return is_reg_2(part.removeprefix(SPECIAL_CHAR["address"]))
+
 # Encode
 def encode_reg(part, is_short):
+	if is_reg_2_address(part):
+		part = part.removeprefix(SPECIAL_CHAR["address"])
 	part = part.lower()
 	_part = part
 	reg_spec = 0

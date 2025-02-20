@@ -1,32 +1,32 @@
-## 0x06	ADD	(R1, C)
+## ADD	(R1, C)
 MOV	AL	0b0001
 
 ADD	AL	0b0010
 
-## 0x07	ADD	(R1, A)
+## ADD	(R1, A)
 MOV	@0x1000 0b0010
 MOV	AL		0b0001
 
 ADD AL		@0x1000
 
-## 0x08	ADD	(A, C)
+## ADD	(A, C)
 MOV	@0x1000 0b0011
 
 ADD	@0x1000 0b0001
 
-## 0x09	ADD	(A, R1)
+## ADD	(A, R1)
 MOV	@0x1000 1
 MOV	AL		2
 
 ADD @0x1000 AL
 
-## 0x0a	ADD	(R1, R1)
+## ADD	(R1, R1)
 MOV	AL	0x01
 MOV	AH	0x11
 
 ADD	AL	AH
 
-## 0x0b	ADD	(A, A)
+## ADD	(A, A)
 MOV	@0x1000	0x01
 MOV	@0x1001	0x12
 

@@ -74,6 +74,10 @@ class Compiler():
 			# 3. Check if line is a label, if so assign save label
 			label = parsing.get_label(instr)
 			if label is not None:
+				if self.label.get(label):
+					print("Duplicate label")
+					sys.exit(RETV["DUPLICATE_LABEL"])
+				print(f"{label} = {length}")
 				self.label[label] = length
 				continue
 
@@ -109,7 +113,8 @@ class Compiler():
 					if arg == "R2":
 						is_constant_short = False
 					compiled_tmp.append(parsing.encode_reg(args[k], is_constant_short))
-
+				if arg == "@R2":
+					compiled_tmp.append(parsing.encode_reg(args[k], False))
 				if arg == "A":
 					try:
 						compiled_tmp.extend(parsing.encode_address(args[k]))
@@ -130,7 +135,6 @@ class Compiler():
 			self.compiled.append(compiled_instr)
 			self.compiled.extend(compiled_tmp)
 			length += parsing.get_instruction_size(opcode_variant["args"])
-
 		# 9. Replace label now that we have ALL label with correct value
 		self.replace_label()
 

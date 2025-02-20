@@ -1,0 +1,11 @@
+## RAND (R1)
+RAND	AL
+RAND	AH
+
+## RAND (R2)
+RAND	RBX
+
+## RAND (A)
+RAND	@0x1000
+
+HLT

@@ -1,32 +1,32 @@
-## 0x12	AND	(R1, C)
+## AND	(R1, C)
 MOV	AL	0b0011
 
 AND	AL	0b0010
 
-## 0x13	AND	(R1, A)
+## AND	(R1, A)
 MOV	@0x1000 0b0010
 MOV	AL		0b0001
 
 AND AL		@0x1000
 
-## 0x14	AND	(A, C)
+## AND	(A, C)
 MOV	@0x1000 0b0011
 
 AND	@0x1000 0b0001
 
-## 0x15	AND	(A, R1)
+## AND	(A, R1)
 MOV	@0x1000 1
 MOV	AL		2
 
 AND @0x1000 AL
 
-## 0x16	AND	(R1, R1)
+## AND	(R1, R1)
 MOV	AL	0x11
 MOV	AH	0x01
 
 AND	AL	AH
 
-## 0x17	AND	(A, A)
+## AND	(A, A)
 MOV	@0x1000	0x12
 MOV	@0x1001	0x01
 

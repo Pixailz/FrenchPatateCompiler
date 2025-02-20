@@ -1,0 +1,16 @@
+## PUSH	(C)
+PUSH	0x01
+
+## PUSH	(R1)
+MOV		AL	0x02
+PUSH	AL
+
+## PUSH	(R2)
+MOV		RAX	0x0304
+PUSH	RAX
+
+## PUSH	(A)
+MOV		@0x1000	0x05
+PUSH	@0x1000
+
+HLT

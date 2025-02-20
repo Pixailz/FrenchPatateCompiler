@@ -1,9 +1,9 @@
-## 0x30	NOT	(R1)
+## NOT	(R1)
 MOV	AL	0b01010101
 
 NOT AL
 
-## 0x31	NOT	(A)
+## NOT	(A)
 MOV	@0x1000	0b00001111
 
 NOT @0x1000

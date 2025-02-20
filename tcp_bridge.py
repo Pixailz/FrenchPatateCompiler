@@ -15,6 +15,8 @@ class TCPBridge():
 	def __init__(self, host, port):
 		self.address = (host, port)
 		self.socket = None
+		self.conn = None
+		self.conn_addr = None
 		self.open_socket()
 		self.bind_socket()
 		self.listen_socket()
@@ -41,8 +43,6 @@ class TCPBridge():
 
 	def accept_connection(self):
 		while 0x42:
-			self.conn = None
-			self.conn_addr = None
 			try:
 				self.conn, self.conn_addr = self.socket.accept()
 			except TimeoutError as e:
@@ -78,6 +78,19 @@ class TCPBridge():
 				print(f": {byte[i]:#04x}")
 			i += 1
 
+	def	write_send_program(self, name, byte, start = 0, direction = 1):
+		data = []
+		i = 0
+		end = start + (direction * len(byte))
+		for addr in range(start, end, direction):
+			data.append(addr >> 8)
+			data.append(addr & 0xff)
+			data.append(byte[i])
+			i += 1
+
+		with open(name, "wb") as f:
+			f.write(bytearray(data))
+
 	def close(self):
 		if self.conn is not None:
 			self.conn.close()
@@ -100,6 +113,7 @@ if __name__ == "__main__":
 	xxd(compiler.compiled)
 
 	tcp_bridge = TCPBridge("", 4444)
+	# tcp_bridge.write_send_program("bad_apple_prog", compiler.compiled)
 	tcp_bridge.accept_connection()
 
 	tcp_bridge.send_program(compiler.compiled)
@@ -110,3 +124,4 @@ if __name__ == "__main__":
 	# 	tcp_bridge.send(byte)
 
 	tcp_bridge.close()
+#

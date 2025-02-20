@@ -1,0 +1,247 @@
+$addr_screen = 0xff00
+
+:Loop
+
+# MOV	RAX	0x1000
+# JPS	:LoadImage
+# RENDER
+
+# MOV	RAX	0x1020
+# JPS	:LoadImage
+# RENDER
+
+MOV	RAX	0x1040
+JPS	:LoadImage
+RENDER
+
+# MOV	RAX	0x1060
+# JPS	:LoadImage
+# RENDER
+
+# MOV	RAX	0x1080
+# JPS	:LoadImage
+# RENDER
+
+# MOV	RAX	0x10a0
+# JPS	:LoadImage
+# RENDER
+
+# MOV	RAX	0x10c0
+# JPS	:LoadImage
+# RENDER
+
+# MOV	RAX	0x10e0
+# JPS	:LoadImage
+# RENDER
+
+# MOV	RAX	0x1100
+# JPS	:LoadImage
+# RENDER
+
+# MOV	RAX	0x1120
+# JPS	:LoadImage
+# RENDER
+
+# MOV	RAX	0x1140
+# JPS	:LoadImage
+# RENDER
+
+# MOV	RAX	0x1160
+# JPS	:LoadImage
+# RENDER
+
+# MOV	RAX	0x1180
+# JPS	:LoadImage
+# RENDER
+
+# MOV	RAX	0x11a0
+# JPS	:LoadImage
+# RENDER
+
+# MOV	RAX	0x11c0
+# JPS	:LoadImage
+# RENDER
+
+# MOV	RAX	0x11e0
+# JPS	:LoadImage
+# RENDER
+# MOV	RAX	0x1200
+# JPS	:LoadImage
+# RENDER
+
+# MOV	RAX	0x1220
+# JPS	:LoadImage
+# RENDER
+
+# MOV	RAX	0x1240
+# JPS	:LoadImage
+# RENDER
+
+# MOV	RAX	0x1260
+# JPS	:LoadImage
+# RENDER
+
+# MOV	RAX	0x1280
+# JPS	:LoadImage
+# RENDER
+
+# MOV	RAX	0x12a0
+# JPS	:LoadImage
+# RENDER
+
+# MOV	RAX	0x12c0
+# JPS	:LoadImage
+# RENDER
+
+# MOV	RAX	0x12e0
+# JPS	:LoadImage
+# RENDER
+
+# MOV	RAX	0x1300
+# JPS	:LoadImage
+# RENDER
+
+# MOV	RAX	0x1320
+# JPS	:LoadImage
+# RENDER
+
+# MOV	RAX	0x1340
+# JPS	:LoadImage
+# RENDER
+
+# MOV	RAX	0x1360
+# JPS	:LoadImage
+# RENDER
+
+# MOV	RAX	0x1380
+# JPS	:LoadImage
+# RENDER
+
+# MOV	RAX	0x13a0
+# JPS	:LoadImage
+# RENDER
+
+# MOV	RAX	0x13c0
+# JPS	:LoadImage
+# RENDER
+
+# MOV	RAX	0x13e0
+# JPS	:LoadImage
+# RENDER
+
+HLT
+
+:LoadImage
+#	RAX:	IMG addr
+
+MOV	RBX	$addr_screen
+# MOV	CL	0x20
+
+# :LoadImageLoop
+# MOV	@RBX	@RAX
+# ADD	AL	1
+# ADD	BL	1
+# SUB	CL	1
+# JPZ	:LoadImageEnd
+# JMP	:LoadImageLoop
+
+# :LoadImageEnd
+
+MOV	@RBX	@RAX
+ADD AL	1
+ADD BL	1
+MOV	@RBX	@RAX
+ADD AL	1
+ADD BL	1
+MOV	@RBX	@RAX
+ADD AL	1
+ADD BL	1
+MOV	@RBX	@RAX
+ADD AL	1
+ADD BL	1
+MOV	@RBX	@RAX
+ADD AL	1
+ADD BL	1
+MOV	@RBX	@RAX
+ADD AL	1
+ADD BL	1
+MOV	@RBX	@RAX
+ADD AL	1
+ADD BL	1
+MOV	@RBX	@RAX
+ADD AL	1
+ADD BL	1
+MOV	@RBX	@RAX
+ADD AL	1
+ADD BL	1
+MOV	@RBX	@RAX
+ADD AL	1
+ADD BL	1
+MOV	@RBX	@RAX
+ADD AL	1
+ADD BL	1
+MOV	@RBX	@RAX
+ADD AL	1
+ADD BL	1
+MOV	@RBX	@RAX
+ADD AL	1
+ADD BL	1
+MOV	@RBX	@RAX
+ADD AL	1
+ADD BL	1
+MOV	@RBX	@RAX
+ADD AL	1
+ADD BL	1
+MOV	@RBX	@RAX
+ADD AL	1
+ADD BL	1
+MOV	@RBX	@RAX
+ADD AL	1
+ADD BL	1
+MOV	@RBX	@RAX
+ADD AL	1
+ADD BL	1
+MOV	@RBX	@RAX
+ADD AL	1
+ADD BL	1
+MOV	@RBX	@RAX
+ADD AL	1
+ADD BL	1
+MOV	@RBX	@RAX
+ADD AL	1
+ADD BL	1
+MOV	@RBX	@RAX
+ADD AL	1
+ADD BL	1
+MOV	@RBX	@RAX
+ADD AL	1
+ADD BL	1
+MOV	@RBX	@RAX
+ADD AL	1
+ADD BL	1
+MOV	@RBX	@RAX
+ADD AL	1
+ADD BL	1
+MOV	@RBX	@RAX
+ADD AL	1
+ADD BL	1
+MOV	@RBX	@RAX
+ADD AL	1
+ADD BL	1
+MOV	@RBX	@RAX
+ADD AL	1
+ADD BL	1
+MOV	@RBX	@RAX
+ADD AL	1
+ADD BL	1
+MOV	@RBX	@RAX
+ADD AL	1
+ADD BL	1
+MOV	@RBX	@RAX
+ADD AL	1
+ADD BL	1
+MOV	@RBX	@RAX
+ADD AL	1
+ADD BL	1
+
+RTS
